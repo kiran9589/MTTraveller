@@ -23,7 +23,7 @@ function Admin() {
           <Route
             path={prop.layout + prop.path}
             render={(props) => <prop.component {...props} />}
-            key={key}
+            key={prop.key}
           />
         );
       } else {

@@ -1,90 +1,82 @@
-import React from "react";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import axios from "axios";
-import { useQuery } from "react-query";
-import { useHistory } from "react-router-dom";
 
-const endpoint = "http://3.66.147.152:9000/graphql";
-const signIn = `
-  {
-    signIn(input:{
-       email:"superadmin"
-      password:"MTT@1234"
-    }){
-      accessToken
+async function loginUser(credentials) {
+
+  let result = null;
+  const endpoint = "http://3.66.147.152:9000/graphql";
+  const signIn = `
+    mutation signIn {
+      signIn(input:{
+        email:"superadmin"
+        password:"MTT@1234"
+      }){
+        accessToken
+      }
     }
-  }
-`;
+  `;
 
+  await axios({
+    url: endpoint,
+    method: "POST",
+    data: {
+      query: signIn
+    }
+  }).then(response => {
+    
+    if(response.data.data){
+      result = response.data.data.signIn.accessToken
+    }
+    
+  });
 
-const Login = (props) => {
-  const history = useHistory();
-  const handleSubmit = (e) => {
+  console.log(result);
+  return result;
+
+//  return fetch('http://localhost:8080/login', {
+//    method: 'POST',
+//    headers: {
+//      'Content-Type': 'application/json'
+//    },
+//    body: JSON.stringify(credentials)
+//  })
+//    .then(data => data.json())
+}
+
+export default function Login({ setToken }) {
+  const [username, setUserName] = useState();
+  const [password, setPassword] = useState();
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    const data = login();
-    localStorage.setItem("token", true);
-    history.push("/");
-  };
-
-  const login = () => {
-    const { data, isLoading, error } = useQuery("launches", () => {
-      return axios({
-        url: endpoint,
-        method: "POST",
-        data: {
-          mutation: signIn
-        }
-      }).then(response => response.data.data);
+    const token = await loginUser({
+      username,
+      password
     });
-  
-    if (isLoading) return "Loading...";
-    if (error) return <pre>{error.message}</pre>;
-    if(data) return data;
+    setToken(token);
   }
-  
 
-  const click = (e) => {
-    e.preventDefault();
-    localStorage.removeItem("token");
-    history.push("/");
-  };
-
-  return (
-    <div>
-      {localStorage.getItem("token") !== "true" ? (
-        <form style={{ width: "100%" }} onSubmit={handleSubmit}>
-          <fieldset
-            style={{
-              width: "60%",
-              margin: "auto",
-              marginBottom: "2%",
-              textAlign: "end",
-            }}
-          >
-            <legend>Login</legend>
-            <input
-              id="username"
-              placeholder="UserName"
-              className="fields"
-              type="text"
-            ></input>
-
-            <input
-              id="password"
-              placeholder="Password"
-              className="fields"
-              type="password"
-            ></input>
-
-            <input type="submit" className="buttons" style={{ width: "20%" }} />
-          </fieldset>
-        </form>
-      ) : (
-        <button style={{ width: "50%" }} className="buttons" onClick={click}>
-          Logout
-        </button>
-      )}
+  return(
+    <div className="login-wrapper">
+      <h1>Please Log In</h1>
+      <form onSubmit={handleSubmit}>
+        <label>
+          <p>Username</p>
+          <input type="text" onChange={e => setUserName(e.target.value)} />
+        </label>
+        <label>
+          <p>Password</p>
+          <input type="password" onChange={e => setPassword(e.target.value)} />
+        </label>
+        <div>
+          <button type="submit">Submit</button>
+        </div>
+      </form>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+Login.propTypes = {
+  setToken: PropTypes.func.isRequired
+};
