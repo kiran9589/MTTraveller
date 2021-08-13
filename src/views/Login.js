@@ -1,63 +1,71 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect } from "react";
 import axios from "axios";
 import '../assets/css/login.css';
+import authService from "../services/auth.service";
 
-async function loginUser(credentials) {
-
-  let result = null;
-  const endpoint = "http://3.66.147.152:9000/graphql";
-  const signIn = `
-    mutation signIn {
-      signIn(input:{
-        email:"superadmin"
-        password:"MTT@1234"
-      }){
-        accessToken
-      }
+function Login(props) {
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      props.history.push("/admin/dashboard");
     }
-  `;
+  }, []);
 
-  await axios({
-    url: endpoint,
-    method: "POST",
-    data: {
-      query: signIn
-    }
-  }).then(response => {
-    
-    if(response.data.data){
-      result = response.data.data.signIn.accessToken
-    }
-    
-  });
-  return result;
-}
+  const loginUser = async ({userName, password}) => {
 
-const required = value => {
-  if (!value) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        This field is required!
-      </div>
-    );
-  }
-};
+    authService.login(userName, password)
+                .then(response=>{
+                  debugger;
+                  console.log("response : ", response);
+                  props.history.push("/admin/dashboard");
+                });
+    // const endpoint = "http://3.66.147.152:9000/graphql";
+    // const signIn = `
+    //   mutation signIn {
+    //     signIn(input:{
+    //       email:"${credentials.userName}"
+    //       password:"${credentials.password}"
+    //     }){
+    //       accessToken
+    //     }
+    //   }
+    // `;
 
-export default function Login({ setToken }) {
-  const [username, setUserName] = useState();
-  const [password, setPassword] = useState();
+    // axios({
+    //   url: endpoint,
+    //   method: "POST",
+    //   data: {
+    //     query: signIn,
+    //   },
+    // })
+    //   .then((response) => {
+    //     if (response.data.data) {
+    //       const token = response.data.data.signIn.accessToken;
+    //       if (localStorage.getItem("mTTacessToken") == token) {
+    //       } else {
+    //         localStorage.setItem(
+    //           "mTTacessToken",
+    //           response.data.data.signIn.accessToken
+    //         );
+    //       }
+    //       props.history.push("/admin/dashboard");
+    //     }
+    //   })
+    //   .catch((error) => {});
+  };
 
-  const handleSubmit = async e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const token = await loginUser({
-      username,
-      password
-    });
-    setToken(token);
-  }
+    const data = e.target;
+    const userName = data[0].value;
+    const password = data[1].value;
 
-  return(
+    loginUser({
+      userName,
+      password,
+    });
+  };
+
+  return (
     <div className="auth-wrapper">
         <form className="auth-inner" onSubmit={handleSubmit}>
           <h3>Sign In</h3>
@@ -65,13 +73,13 @@ export default function Login({ setToken }) {
           <div className="form-group">
               <label>User Name</label>
               <input type="text" className="form-control" 
-              onChange={e => setUserName(e.target.value)} placeholder="Enter username" 
-              validations={[required]}/>
+              placeholder="Enter username" 
+              required />
           </div>
 
           <div className="form-group">
               <label>Password</label>
-              <input type="password" className="form-control" onChange={e => setPassword(e.target.value)} placeholder="Enter password" />
+              <input type="password" className="form-control"  placeholder="Enter password" required/>
           </div>
 
           <div className="form-group">
@@ -87,10 +95,6 @@ export default function Login({ setToken }) {
           </p> */}
     </form>
     </div>
-    
-  )
+  );
 }
-
-Login.propTypes = {
-  setToken: PropTypes.func.isRequired
-};
+export default Login;

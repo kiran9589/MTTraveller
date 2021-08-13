@@ -1,11 +1,15 @@
 import React, { Component } from "react";
 import { useLocation } from "react-router-dom";
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
+import authService from "../../services/auth.service";
 
 import routes from "routes.js";
 
 function Header() {
   const location = useLocation();
+  const logout = () =>{
+    authService.logout();
+  }
   const mobileSidebarToggle = (e) => {
     e.preventDefault();
     document.documentElement.classList.toggle("nav-open");
@@ -45,6 +49,7 @@ function Header() {
             {getBrandText()}
           </Navbar.Brand>
         </div>
+        <Button variant="none" onClick={logout}><i className="nc-icon nc-circle-09" aria-hidden="true"></i></Button>
       </Container>
     </Navbar>
   );

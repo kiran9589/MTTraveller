@@ -24,6 +24,7 @@ function Admin() {
             path={prop.layout + prop.path}
             render={(props) => <prop.component {...props} />}
             key={prop.key}
+            id={prop.id}
           />
         );
       } else {

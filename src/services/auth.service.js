@@ -1,25 +1,45 @@
 import axios from "axios";
-
-const API_URL = "http://localhost:8080/api/auth/";
+import config from "../common/config"
+import { history } from "_helper/history";
+const API_URL = config.apiUrl;
 
 class AuthService {
   login(username, password) {
-    return axios
-      .post(API_URL + "signin", {
-        username,
-        password
-      })
-      .then(response => {
-        if (response.data.accessToken) {
-          localStorage.setItem("user", JSON.stringify(response.data));
-        }
+    const signIn = `mutation signIn {
+          signIn(input:{
+              email:"${username}"
+              password:"${password}"
+          }){
+              accessToken
+          }
+        }`;
 
-        return response.data;
+    const requestOptions = {
+      url: API_URL,
+      method: 'POST',
+      data: {
+          query: signIn
+      }
+    };
+
+    return axios(requestOptions)
+      .then(response => {
+        if (response.data.data) {
+          localStorage.setItem("user", JSON.stringify(response.data.data));
+          const token = response.data.data.signIn.accessToken;
+          if (localStorage.getItem("token") != token) {
+            localStorage.setItem("token",token);
+          }
+          return token;
+        }
+        return null;
       });
   }
 
   logout() {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    history.push("/login");
   }
 
   register(username, email, password) {

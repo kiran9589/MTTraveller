@@ -16,8 +16,14 @@ import {
   Tooltip,
 } from "react-bootstrap";
 
+import ConfirmPopup from "./Popup";
+
 function Dashboard() {
   const [post, setPost] = useState(null);
+  
+  const handleShow = () =>{
+    console.log("Excute call");
+  };
 
   useEffect(() => {
     if (data) {
@@ -58,7 +64,7 @@ function Dashboard() {
                       <div className="stats">{data.description}</div>
                       <hr></hr>
                       <div >
-                        <Button>Enroll</Button>
+                          <ConfirmPopup onreload={handleShow}/>
                       </div>
                     </Card.Footer>
                   </Card>
@@ -66,6 +72,7 @@ function Dashboard() {
               );
             })}
         </Row>
+        
       </div>
     </>
   );
