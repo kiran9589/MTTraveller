@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from "axios";
+import '../assets/css/login.css';
 
 async function loginUser(credentials) {
 
@@ -30,19 +31,18 @@ async function loginUser(credentials) {
     }
     
   });
-
-  console.log(result);
   return result;
-
-//  return fetch('http://localhost:8080/login', {
-//    method: 'POST',
-//    headers: {
-//      'Content-Type': 'application/json'
-//    },
-//    body: JSON.stringify(credentials)
-//  })
-//    .then(data => data.json())
 }
+
+const required = value => {
+  if (!value) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        This field is required!
+      </div>
+    );
+  }
+};
 
 export default function Login({ setToken }) {
   const [username, setUserName] = useState();
@@ -58,22 +58,36 @@ export default function Login({ setToken }) {
   }
 
   return(
-    <div className="login-wrapper">
-      <h1>Please Log In</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          <p>Username</p>
-          <input type="text" onChange={e => setUserName(e.target.value)} />
-        </label>
-        <label>
-          <p>Password</p>
-          <input type="password" onChange={e => setPassword(e.target.value)} />
-        </label>
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
+    <div className="auth-wrapper">
+        <form className="auth-inner" onSubmit={handleSubmit}>
+          <h3>Sign In</h3>
+
+          <div className="form-group">
+              <label>User Name</label>
+              <input type="text" className="form-control" 
+              onChange={e => setUserName(e.target.value)} placeholder="Enter username" 
+              validations={[required]}/>
+          </div>
+
+          <div className="form-group">
+              <label>Password</label>
+              <input type="password" className="form-control" onChange={e => setPassword(e.target.value)} placeholder="Enter password" />
+          </div>
+
+          <div className="form-group">
+              <div className="custom-control custom-checkbox">
+                  <input type="checkbox" className="custom-control-input" id="customCheck1" />
+                  {/* <label className="custom-control-label" htmlFor="customCheck1">Remember me</label> */}
+              </div>
+          </div>
+
+          <button type="submit" className="btn btn-primary btn-block">Submit</button>
+          {/* <p className="forgot-password text-right">
+              Forgot <a href="#">password?</a>
+          </p> */}
+    </form>
     </div>
+    
   )
 }
 
