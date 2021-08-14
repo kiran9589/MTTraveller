@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
 import authService from "../../services/auth.service";
 
@@ -7,8 +7,11 @@ import routes from "routes.js";
 
 function Header() {
   const location = useLocation();
+  const history = useHistory();
+
   const logout = () =>{
     authService.logout();
+    history.push("/");
   }
   const mobileSidebarToggle = (e) => {
     e.preventDefault();

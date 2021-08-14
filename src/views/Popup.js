@@ -13,11 +13,10 @@ function ConfirmPopup(props) {
         props.onreload();
     };
     const handleShow = () => setShow(true);
-  debugger;
     return (
       <>
         <Button variant="primary" onClick={handleShow}>
-            Enroll
+            Enroll {props.postId}
         </Button>
   
         <Modal

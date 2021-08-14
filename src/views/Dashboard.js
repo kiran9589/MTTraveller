@@ -17,17 +17,26 @@ import {
 } from "react-bootstrap";
 
 import ConfirmPopup from "./Popup";
+import postService  from "../services/post.service";
 
 function Dashboard() {
   const [post, setPost] = useState(null);
   
   const handleShow = () =>{
-    console.log("Excute call");
+    loadPosts();
   };
 
   useEffect(() => {
-    if (data) {
-      const filteredPosts = data.postsByType.map((item) => {
+      if(localStorage.getItem("token")){
+        loadPosts();
+      } else {
+        history.push("/login");
+      }
+  }, []);
+
+  const loadPosts = () => {
+    postService.getAllPosts().then((resp) => {
+      const filteredPosts = resp.postsByType.map((item) => {
         const images = item.uploads.map((image) => {
           return image.url;
         });
@@ -35,8 +44,8 @@ function Dashboard() {
         return { id, topic, description, images };
       });
       setPost(filteredPosts);
-    }
-  }, []);
+    })
+  }
 
   return (
     <>
@@ -58,13 +67,14 @@ function Dashboard() {
                     >
                       {data.topic}
                     </Card.Title>
-                    <FbGridImages images={data.images}></FbGridImages>
+                    {data.images.length > 0 ? <FbGridImages images={data.images}></FbGridImages> : null}
+                    
                     <Card.Footer className="text-center">
                       <hr></hr>
                       <div className="stats">{data.description}</div>
                       <hr></hr>
                       <div >
-                          <ConfirmPopup onreload={handleShow}/>
+                          <ConfirmPopup postId={data.id} onreload={handleShow}/>
                       </div>
                     </Card.Footer>
                   </Card>
