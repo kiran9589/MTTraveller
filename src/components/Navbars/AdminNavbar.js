@@ -52,7 +52,7 @@ function Header() {
             {getBrandText()}
           </Navbar.Brand>
         </div>
-        <Button variant="none" onClick={logout}><i className="nc-icon nc-circle-09" aria-hidden="true"></i></Button>
+        <i onClick={logout} style={{cursor: 'pointer'}} className="nc-icon nc-button-power" aria-hidden="true"></i>
       </Container>
     </Navbar>
   );

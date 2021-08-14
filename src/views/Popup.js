@@ -7,16 +7,21 @@ import {
 
 function ConfirmPopup(props) {
     const [show, setShow] = useState(false);
-  
+
     const handleClose = () => {
         setShow(false);
-        props.onreload();
     };
+
+    const enrollCall = () =>{
+      setShow(false);
+      props.onreload(props.postId);
+    };
+
     const handleShow = () => setShow(true);
     return (
       <>
         <Button variant="primary" onClick={handleShow}>
-            Enroll {props.postId}
+            Post To Community 
         </Button>
   
         <Modal
@@ -26,17 +31,16 @@ function ConfirmPopup(props) {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Modal title</Modal.Title>
+            <Modal.Title>Confirmation</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            I will not close if you click outside me. Don't even try to press
-            escape key.
+              Are sure you want to enroll this post into the Community?
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
-              Close
+              NO
             </Button>
-            <Button variant="primary">Understood</Button>
+            <Button variant="primary" onClick={enrollCall}>YES</Button>
           </Modal.Footer>
         </Modal>
       </>

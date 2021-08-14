@@ -10,12 +10,11 @@ class PostService {
   }
 
   async getAllPosts() {
-      
-
+    
       let result = null;
       const postRequest = `
       query {
-          postsByType(input: { pagination: { skip: 0, take: 20 }, isPrivate: true }) {
+          postsByType(input: { pagination: { skip: 0, take: 20 }, isPrivate: false }) {
             id
             topic
             description
@@ -58,11 +57,38 @@ class PostService {
           
           if(response.data.data){
               result = response.data.data
-              console.log("result : ", result);
           }
           
       });
       return result;
+  }
+
+  async enrollToCommunity(postId){
+    let result = null;
+      const postQuery = `mutation{
+        createPostForumPost(input:{postId:"${postId}"}){
+            id          
+        }
+      }`;
+
+      const requestOptions = {
+          url: API_URL,
+          method: 'POST',
+          headers: authHeader(),
+          data: { 
+              query: postQuery
+          }
+      };
+
+      // await axios(requestOptions).then(response => {
+          
+      //     if(response.data.data){
+      //         result = response.data.data
+      //         console.log("result : ", result);
+      //     }
+          
+      // });
+      return postId;
   }
 }
 

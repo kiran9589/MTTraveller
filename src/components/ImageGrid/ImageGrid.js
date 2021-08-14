@@ -1,4 +1,4 @@
 import './grid.css';
-import FbGridImages from './Image'
+import GridImages from './Image'
 
-export default FbGridImages;
+export default GridImages;
