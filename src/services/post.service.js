@@ -9,12 +9,16 @@ class PostService {
     return axios.get(API_URL + 'all');
   }
 
-  async getAllPosts() {
-    
+  async getAllPosts(offset) {
+      const limit = 20;
+      if(offset > 0){
+        offset = (offset * limit) + 1;
+      }
+
       let result = null;
       const postRequest = `
       query {
-          postsByType(input: { pagination: { skip: 0, take: 20 }, isPrivate: false }) {
+          postsByType(input: { pagination: { skip: ${offset}, take: ${limit} }, isPrivate: false }) {
             id
             topic
             description

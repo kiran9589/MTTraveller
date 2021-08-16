@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import GridImages from "../components/ImageGrid/ImageGrid";
-import { Card, Row, Col } from "react-bootstrap";
+import { Card, Row, Col, Button } from "react-bootstrap";
 import noimage from "../assets/img/no-image-available.jpeg";
 import ConfirmPopup from "./Popup";
 import postService from "../services/post.service";
@@ -10,10 +10,12 @@ import FixedPlugin from "../components/FixedPlugin/FixedPlugin.js";
 
 function Dashboard() {
   const [post, setPost] = useState(null);
+  let [page, setPage] = useState(null);
   const [loaderVisible, setLoaderVisible] = useState(null);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
+      setPage(0)
       loadPosts();
     } else {
       history.push("/login");
@@ -21,18 +23,40 @@ function Dashboard() {
   }, []);
 
   const loadPosts = (position) => {
+    if(position == "R"){
+      page = page + 1;
+      setPage(page);
+    } else {
+      if(page > 0){
+        page = page - 1;
+      } else {
+        page = 0;
+      }
+      setPage(page);
+    }
+
     setLoaderVisible(true);
-    postService.getAllPosts().then((resp) => {
-      const filteredPosts = resp.postsByType.map((item) => {
-        const images = item.uploads.map((image) => {
-          if (!image.metadata?.duration) return image.url;
-          else return noimage;
-        });
-        const { id, topic, description } = item;
-        return { id, topic, description, images };
-      });
-      setLoaderVisible(false);
-      setPost(filteredPosts);
+    postService.getAllPosts(page).then((resp) => {
+        if(resp.postsByType.length > 0){
+          const filteredPosts = resp.postsByType.map((item) => {
+            const images = item.uploads.map((image) => {
+              if (!image.metadata?.duration) return image.url;
+              else return noimage;
+            });
+            const { id, topic, description } = item;
+            return { id, topic, description, images };
+          });
+          setLoaderVisible(false);
+          setPost(filteredPosts);
+        } else {
+          if(page > 0){
+            page = 0;
+            setPage(page);
+            loadPosts();
+          }
+          
+        }
+      
     });
   };
 
@@ -45,6 +69,25 @@ function Dashboard() {
 
   return (
     <>
+        <Row className="d-flex flex-row-reverse mr-0">
+          <nav aria-label="Page navigation example">
+            <ul className="pagination justify-content-end">
+              <li className="page-item">
+                <a className="page-link" href="#" onClick={() => loadPosts("L")}>
+                <span aria-hidden="true">&laquo;</span>
+                <span className="sr-only">Previous</span>
+                </a>
+              </li>
+              <li className="page-item"><a className="page-link" href="#">{page+1}</a></li>
+              <li className="page-item">
+                <a className="page-link" href="#" onClick={() => loadPosts("R")}>
+                  <span aria-hidden="true">&raquo;</span>
+                  <span className="sr-only">Next</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </Row>
         {loaderVisible ? (
           <div style={{ textAlign: "center" }}>
             <Loader
@@ -57,9 +100,6 @@ function Dashboard() {
           </div>
         ) : (
           <>
-            <FixedPlugin position="left" onClick={() => loadPosts("L")} />
-            <FixedPlugin position="right" onClick={() => loadPosts("R")} />
-
             <Row>
               {post &&
                 post.map((data) => {
@@ -128,6 +168,25 @@ function Dashboard() {
             </Row>
           </>
         )}
+      <Row className="d-flex flex-row-reverse mr-0">
+          <nav aria-label="Page navigation example">
+            <ul className="pagination justify-content-end">
+              <li className="page-item">
+                <a className="page-link" href="#" onClick={() => loadPosts("L")}>
+                <span aria-hidden="true">&laquo;</span>
+                <span className="sr-only">Previous</span>
+                </a>
+              </li>
+              <li className="page-item"><a className="page-link" href="#">{page+1}</a></li>
+              <li className="page-item">
+                <a className="page-link" href="#" onClick={() => loadPosts("R")}>
+                  <span aria-hidden="true">&raquo;</span>
+                  <span className="sr-only">Next</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </Row>
     </>
   );
 }
