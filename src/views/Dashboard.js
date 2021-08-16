@@ -4,8 +4,9 @@ import { Card, Row, Col } from "react-bootstrap";
 import noimage from "../assets/img/no-image-available.jpeg";
 import ConfirmPopup from "./Popup";
 import postService from "../services/post.service";
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
 import Loader from "react-loader-spinner";
+import FixedPlugin from "../components/FixedPlugin/FixedPlugin.js";
 
 function Dashboard() {
   const [post, setPost] = useState(null);
@@ -19,15 +20,13 @@ function Dashboard() {
     }
   }, []);
 
-  const loadPosts = () => {
+  const loadPosts = (position) => {
     setLoaderVisible(true);
     postService.getAllPosts().then((resp) => {
       const filteredPosts = resp.postsByType.map((item) => {
         const images = item.uploads.map((image) => {
-          if(!image.metadata?.duration)
-            return image.url;
-          else 
-            return noimage;
+          if (!image.metadata?.duration) return image.url;
+          else return noimage;
         });
         const { id, topic, description } = item;
         return { id, topic, description, images };
@@ -37,89 +36,98 @@ function Dashboard() {
     });
   };
 
-  const addToCommunity = (postId) =>{
+  const addToCommunity = (postId) => {
     postService.enrollToCommunity(postId).then((resp) => {
-      toast.success(`Post added successfully in community.${resp}`)
+      toast.success(`Post added successfully in community.`);
       loadPosts();
     });
   };
 
   return (
     <>
-      <div>
-        <div style={{textAlign:"center"}}>
-          <Loader
-            type="ThreeDots"
-            color="#00BFFF"
-            height={80} width={80}
-            visible={loaderVisible}
-          />
-        </div>
-     
-        <Row>
-          {post &&
-            post.map((data) => {
-              return (
-                <Col lg="3" sm="6" key={`col${data.id}`}>
-                  <Card className="card-stats">
-                    <Card.Title
-                      className="title"
-                      as="h3"
-                      style={{
-                        textAlign: "center",
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        marginTop: "5px",
-                      }}
-                    >
-                      {data.id } {data.topic}
-                    </Card.Title>
-                    {data.images.length > 0 ? (
-                      <GridImages images={data.images}></GridImages>
-                    ) : (
-                      <div className="grid-container">
-                        <div className="container">
-                          <div className="row">
-                            <div
-                              className="border height-three background col-md-12 col-12"
-                              style={{ background: `url(${noimage})`}}
-                            >
-                              <div className="cover slide"></div>
-                              <div className="cover-text slide animate-text"></div>
+        {loaderVisible ? (
+          <div style={{ textAlign: "center" }}>
+            <Loader
+              type="ThreeDots"
+              color="#00BFFF"
+              height={80}
+              width={80}
+              visible={loaderVisible}
+            />
+          </div>
+        ) : (
+          <>
+            <FixedPlugin position="left" onClick={() => loadPosts("L")} />
+            <FixedPlugin position="right" onClick={() => loadPosts("R")} />
 
-                              {/* <span style={{ textAlign: "centre" }}>
+            <Row>
+              {post &&
+                post.map((data) => {
+                  return (
+                    <Col lg="3" sm="6" key={`col${data.id}`}>
+                      <Card className="card-stats">
+                        <Card.Title
+                          className="title"
+                          as="h3"
+                          style={{
+                            textAlign: "center",
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            marginTop: "5px",
+                          }}
+                        >
+                        {data.topic}
+                        </Card.Title>
+                        {data.images.length > 0 ? (
+                          <GridImages images={data.images}></GridImages>
+                        ) : (
+                          <div className="grid-container">
+                            <div className="container">
+                              <div className="row">
+                                <div
+                                  className="border height-three background col-md-12 col-12"
+                                  style={{ background: `url(${noimage})` }}
+                                >
+                                  <div className="cover slide"></div>
+                                  <div className="cover-text slide animate-text"></div>
+
+                                  {/* <span style={{ textAlign: "centre" }}>
                                 No Image
                               </span> */}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <Card.Footer className="text-center">
-                      <hr></hr>
-                      <div className="stats">
-                        {data.description ? (
-                          data.description
-                        ) : (
-                          <>
-                            <span style={{ textAlign: "centre" }}>
-                              No Description
-                            </span>
-                          </>
                         )}
-                      </div>
-                      <hr></hr>
-                      <div>
-                        <ConfirmPopup postId={data.id} onreload={addToCommunity} />
-                      </div>
-                    </Card.Footer>
-                  </Card>
-                </Col>
-              );
-            })}
-        </Row>
-      </div>
+
+                        <Card.Footer className="text-center">
+                          <hr></hr>
+                          <div className="stats">
+                            {data.description ? (
+                              data.description
+                            ) : (
+                              <>
+                                <span style={{ textAlign: "centre" }}>
+                                  No Description
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <hr></hr>
+                          <div>
+                            <ConfirmPopup
+                              postId={data.id}
+                              onreload={addToCommunity}
+                            />
+                          </div>
+                        </Card.Footer>
+                      </Card>
+                    </Col>
+                  );
+                })}
+            </Row>
+          </>
+        )}
     </>
   );
 }

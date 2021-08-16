@@ -71,14 +71,14 @@
 }
 
 .fixed-plugin{
-    position: absolute;
-    top: 180px;
-    right: 0;
+    position: fixed;
     width: 64px;
     background: rgba(0,0,0,.3);
     z-index: 1031;
     border-radius: 8px 0 0 8px;
     text-align: center;
+    padding: 1rem;
+    cursor: pointer;
 }
 .fixed-plugin .fa-cog{
     color: #FFFFFF;
