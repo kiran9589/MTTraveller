@@ -80,14 +80,14 @@ class PostService {
           }
       };
 
-      // await axios(requestOptions).then(response => {
+      await axios(requestOptions).then(response => {
           
-      //     if(response.data.data){
-      //         result = response.data.data
-      //         console.log("result : ", result);
-      //     }
+          if(response.data.data){
+              result = response.data.data
+              console.log("result : ", result);
+          }
           
-      // });
+      });
       return postId;
   }
 }
