@@ -14,43 +14,8 @@ function Login(props) {
 
     authService.login(userName, password)
                 .then(response=>{
-                  debugger;
-                  console.log("response : ", response);
                   props.history.push("/admin/dashboard");
                 });
-    // const endpoint = "http://3.66.147.152:9000/graphql";
-    // const signIn = `
-    //   mutation signIn {
-    //     signIn(input:{
-    //       email:"${credentials.userName}"
-    //       password:"${credentials.password}"
-    //     }){
-    //       accessToken
-    //     }
-    //   }
-    // `;
-
-    // axios({
-    //   url: endpoint,
-    //   method: "POST",
-    //   data: {
-    //     query: signIn,
-    //   },
-    // })
-    //   .then((response) => {
-    //     if (response.data.data) {
-    //       const token = response.data.data.signIn.accessToken;
-    //       if (localStorage.getItem("mTTacessToken") == token) {
-    //       } else {
-    //         localStorage.setItem(
-    //           "mTTacessToken",
-    //           response.data.data.signIn.accessToken
-    //         );
-    //       }
-    //       props.history.push("/admin/dashboard");
-    //     }
-    //   })
-    //   .catch((error) => {});
   };
 
   const handleSubmit = (e) => {

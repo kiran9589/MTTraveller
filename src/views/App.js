@@ -31,7 +31,7 @@ function App() {
 }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/MTTravel">
     <Switch>
       <Route path={"/login"} render={(props) => <Login {...props} />} />
       <PrivateRoute path="/admin">

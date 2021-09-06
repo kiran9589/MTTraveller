@@ -21,7 +21,7 @@ function ConfirmPopup(props) {
     return (
       <>
         <Button variant="primary" onClick={handleShow}>
-            Post To Community 
+            Add To Community 
         </Button>
   
         <Modal
@@ -34,7 +34,7 @@ function ConfirmPopup(props) {
             <Modal.Title>Confirmation</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-              Are sure you want to enroll this post into the Community?
+              Are sure you want to enroll this {props.type} into the Community?
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>

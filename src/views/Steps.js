@@ -3,12 +3,12 @@ import GridImages from "../components/ImageGrid/ImageGrid";
 import { Card, Row, Col, Button } from "react-bootstrap";
 import noimage from "../assets/img/no-image-available.jpeg";
 import ConfirmPopup from "./Popup";
-import postService from "../services/post.service";
+import stepService from "../services/step.service";
 import { toast } from "react-toastify";
 import Loader from "react-loader-spinner";
 import FixedPlugin from "../components/FixedPlugin/FixedPlugin.js";
 
-function Dashboard() {
+function Steps() {
   const [post, setPost] = useState(null);
   let [page, setPage] = useState(null);
   const [loaderVisible, setLoaderVisible] = useState(null);
@@ -16,13 +16,13 @@ function Dashboard() {
   useEffect(() => {
     if (localStorage.getItem("token")) {
       setPage(0)
-      loadPosts();
+      loadSteps();
     } else {
       history.push("/login");
     }
   }, []);
 
-  const loadPosts = (position) => {
+  const loadSteps = (position) => {
     if(position == "R"){
       page = page + 1;
       setPage(page);
@@ -36,15 +36,15 @@ function Dashboard() {
     }
 
     setLoaderVisible(true);
-    postService.getAllPosts(page).then((resp) => {
-        if(resp.postsByType.length > 0){
-          const filteredPosts = resp.postsByType.map((item) => {
+    stepService.getAllSteps(page).then((resp) => {
+        if(resp.stepsForCommunityEnroll.length > 0){
+          const filteredPosts = resp.stepsForCommunityEnroll.map((item) => {
             const images = item.uploads.map((image) => {
               if (!image.metadata?.duration) return image.url;
               else return noimage;
             });
-            const { id, topic, description } = item;
-            return { id, topic, description, images };
+            const { id, name, description } = item;
+            return { id, name, description, images };
           });
           setLoaderVisible(false);
           setPost(filteredPosts);
@@ -52,7 +52,7 @@ function Dashboard() {
           if(page > 0){
             page = 0;
             setPage(page);
-            loadPosts();
+            loadSteps();
           }
           
         }
@@ -60,10 +60,10 @@ function Dashboard() {
     });
   };
 
-  const addToCommunity = (postId) => {
-    postService.enrollToCommunity(postId).then((resp) => {
-      toast.success(`Post added successfully in community.`);
-      loadPosts();
+  const addToCommunity = (stepId) => {
+    stepService.enrollToCommunity(stepId).then((resp) => {
+      toast.success(`Step added successfully in community.`);
+      loadSteps();
     });
   };
 
@@ -73,14 +73,14 @@ function Dashboard() {
           <nav aria-label="Page navigation example">
             <ul className="pagination justify-content-end">
               <li className="page-item">
-                <a className="page-link" href="#" onClick={() => loadPosts("L")}>
+                <a className="page-link" href="#" onClick={() => loadSteps("L")}>
                 <span aria-hidden="true">&laquo;</span>
                 <span className="sr-only">Previous</span>
                 </a>
               </li>
               <li className="page-item"><a className="page-link" href="#">{page+1}</a></li>
               <li className="page-item">
-                <a className="page-link" href="#" onClick={() => loadPosts("R")}>
+                <a className="page-link" href="#" onClick={() => loadSteps("R")}>
                   <span aria-hidden="true">&raquo;</span>
                   <span className="sr-only">Next</span>
                 </a>
@@ -116,7 +116,7 @@ function Dashboard() {
                             marginTop: "5px",
                           }}
                         >
-                        {data.topic}
+                        {data.name}
                         </Card.Title>
                         {data.images.length > 0 ? (
                           <GridImages images={data.images}></GridImages>
@@ -158,7 +158,7 @@ function Dashboard() {
                             <ConfirmPopup
                               postId={data.id}
                               onreload={addToCommunity}
-                              type="Post"
+                              type="Step"
                             />
                           </div>
                         </Card.Footer>
@@ -173,14 +173,14 @@ function Dashboard() {
           <nav aria-label="Page navigation example">
             <ul className="pagination justify-content-end">
               <li className="page-item">
-                <a className="page-link" href="#" onClick={() => loadPosts("L")}>
+                <a className="page-link" href="#" onClick={() => loadSteps("L")}>
                 <span aria-hidden="true">&laquo;</span>
                 <span className="sr-only">Previous</span>
                 </a>
               </li>
               <li className="page-item"><a className="page-link" href="#">{page+1}</a></li>
               <li className="page-item">
-                <a className="page-link" href="#" onClick={() => loadPosts("R")}>
+                <a className="page-link" href="#" onClick={() => loadSteps("R")}>
                   <span aria-hidden="true">&raquo;</span>
                   <span className="sr-only">Next</span>
                 </a>
@@ -192,4 +192,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default Steps;

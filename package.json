@@ -1,6 +1,7 @@
 {
   "name": "traveller",
   "version": "2.0.0",
+  "homepage": "./",
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.2",
     "axios": "^0.21.1",
