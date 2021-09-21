@@ -9,8 +9,7 @@ class NotificationService {
   async sendNotification(notficationObj){
     let result = null;
 
-
-    let notifyObj = `type: "WebPortal", title: "${notficationObj.title.trim()}", content: "${notficationObj.content.trim()}"`
+    let notifyObj = `type: "WebPortal", notificationType: "${notficationObj.notificationType}" ,title: "${notficationObj.title.trim()}", content: "${notficationObj.content.trim()}"`
     if(notficationObj.isPrivate != null){
       notifyObj = notifyObj + `, isPrivate: ${notficationObj.isPrivate}`
     }
