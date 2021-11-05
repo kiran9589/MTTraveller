@@ -6,6 +6,7 @@ import notificationService from "../services/notification.service";
 
 function Notification() {
   const [loaderVisible, setLoaderVisible] = useState(null);
+  const [enableType, setEnableType] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -14,30 +15,40 @@ function Notification() {
     }
   }, []);
 
-  const handleSubmit = (event) => {
-    const formData = new FormData(event.currentTarget);
-    event.preventDefault();
-    let notficationObj ={
-        title: "", content: "", isPrivate: true, isCompleted: true, isVerified: true, notificationType:""
-    }
-    for (let [key, value] of formData.entries()) {
-      if(key !== 'title' && key !== 'content'  && key !== 'notificationType'){
-        if(value == "all"){
-          delete notficationObj[key];
-        } else {
-          notficationObj[key] = JSON.parse(value)
-        }
+  const onTypeSelect = (event) => {
+      const typeList = ['FORUM_POST_DETAILS', 'POST_DETAILS', 'TRIP_DETAILS']
+      if(typeList.includes(event.target.value)){
+          setEnableType(true)
       } else {
-        notficationObj[key] = value;
+          setEnableType(false)
       }
-    }
+  }
 
-    setLoaderVisible(true);
-    notificationService.sendNotification(notficationObj).then((resp) => {
-      toast.success(`Notfication successfully triggered for ${resp.sendCommonNotification} users !!!`);
-      event.target.reset();
-      setLoaderVisible(false);
-    });
+  const handleSubmit = (event) => {
+      const formData = new FormData(event.currentTarget);
+      event.preventDefault();
+      let notficationObj ={
+          title: "", content: "", isPrivate: true, isCompleted: true, isVerified: true, notificationType:"",
+          notificationTo:"all"
+      }
+      for (let [key, value] of formData.entries()) {
+        if(key !== 'title' && key !== 'content'  && key !== 'notificationType'&& key !== 'notificationTo'){
+          if(value == "all"){
+            delete notficationObj[key];
+          } else {
+            notficationObj[key] = JSON.parse(value)
+          }
+        } else {
+          notficationObj[key] = value;
+        }
+      }
+
+      setLoaderVisible(true);
+      notificationService.sendNotification(notficationObj).then((resp) => {
+        toast.success(`Notfication successfully triggered for ${resp.sendCommonNotification} users !!!`);
+        event.target.reset();
+        setLoaderVisible(false);
+      });
   };
 
   return (
@@ -60,13 +71,29 @@ function Notification() {
 
         <Form onSubmit={handleSubmit} className="hv-center">
                <Row>
-                  <div className="form-group col-lg-12">
+                  <div className="form-group col-lg-6">
                       <label>Notification Type <span style={{color:'red'}}> * </span></label>
-                      <select name="notificationType" className="form-control" >
+                      <select name="notificationType" className="form-control" onChange={onTypeSelect}>
                         <option value="APP_UPDATE">APP UPDATE</option>
                         <option value="CUSTOM_NOTIFICATION">CUSTOM NOTIFICATION</option>
+                        <option value="FORUM_POST_DETAILS">FORUM POST DETAILS</option>
+                        <option value="POST_DETAILS">POST DETAILS</option>
+                        <option value="TRIP_DETAILS">TRIP DETAILS</option>
+                        <option value="FRIEND_SUGGESTIONS">FRIEND SUGGESTIONS</option>
                       </select>
                   </div>
+                  {enableType ? (
+                    <div className="form-group col-lg-6">
+                      <label>Type ID <span style={{color:'red'}}> * </span></label>
+                      <input type="text" 
+                            className="form-control" 
+                            name="typeId" 
+                            placeholder="Enter Type ID"
+                            required
+                      />
+                    </div>
+                  ): null}
+                  
                 </Row>
                 <Row>
                   <div className="form-group col-lg-12">
@@ -116,7 +143,15 @@ function Notification() {
                     </select>
                   </div>
                 </Row>
-                
+                <Row>
+                  <div className="form-group col-lg-4">
+                      <label>Notification To</label>
+                      <select name="notificationTo" className="form-control" >
+                        <option value="all">All</option>
+                        <option value="test">Test Users</option>
+                      </select>
+                    </div>
+                </Row> 
                 
                 <div className="footer" align="right"> 
                   <button className="btn btn-secondary mr-2" type="reset" disabled={loaderVisible}>

@@ -22,6 +22,14 @@ class NotificationService {
       notifyObj = notifyObj + `, isVerified: ${notficationObj.isVerified}`
     }
 
+    if(notficationObj.typeId != null){
+      notifyObj = notifyObj + `, typeId: ${notficationObj.typeId}`
+    }
+
+    if(notficationObj.notificationTo != null){
+      notifyObj = notifyObj + `, notificationTo: "${notficationObj.notificationTo}"`
+    } 
+
       const stepQuery = `mutation{
         sendCommonNotification(input: { ${notifyObj}})
       }`;
